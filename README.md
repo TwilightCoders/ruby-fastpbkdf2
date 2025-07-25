@@ -41,6 +41,7 @@ key = FastPBKDF2.pbkdf2_hmac('sha256', 'password', 'salt', 100000, 32)
 Real-world benchmarks on macOS (x86_64) show consistent performance improvements across all scenarios:
 
 ### Low Security (1,000 iterations)
+
 | Algorithm | FastPBKDF2 | OpenSSL | Speedup   | Use Case                 |
 | --------- | ---------- | ------- | --------- | ------------------------ |
 | SHA1      | 0.12ms     | 0.21ms  | **1.75x** | Basic web authentication |
@@ -170,6 +171,7 @@ The gem compiles the fastpbkdf2 C library during installation, so no external de
 ## Cross-Platform Compatibility
 
 This gem is designed to compile and run across major platforms:
+
 ### ✅ Supported Platforms
 
 - **macOS**: Intel (x86_64) and Apple Silicon (arm64)
