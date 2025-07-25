@@ -8,7 +8,7 @@
 #ifndef FASTPBKDF2_WRAPPER_H
 #define FASTPBKDF2_WRAPPER_H
 
-/* macOS/Apple platform compatibility fixes */
+/* Platform-specific compatibility fixes */
 #ifdef __APPLE__
   /* On macOS, we have __GNUC__ but don't want to use the GCC-specific 
    * endian.h and __BYTE_ORDER checks. Let's define the endian macros
@@ -25,6 +25,20 @@
   #endif
   #ifndef __BIG_ENDIAN
     #define __BIG_ENDIAN    BIG_ENDIAN
+  #endif
+#endif
+
+/* Windows platform compatibility fixes */
+#ifdef _WIN32
+  /* Windows doesn't have endian.h, but it's always little-endian on x86/x64 */
+  #ifndef __BYTE_ORDER
+    #define __BYTE_ORDER    1234
+  #endif
+  #ifndef __LITTLE_ENDIAN
+    #define __LITTLE_ENDIAN 1234
+  #endif
+  #ifndef __BIG_ENDIAN
+    #define __BIG_ENDIAN    4321
   #endif
 #endif
 

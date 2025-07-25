@@ -74,6 +74,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     needs: test
+    if: always() # Run even if some test jobs fail
 
     steps:
       - uses: actions/checkout@v4
@@ -83,6 +84,7 @@ jobs:
         with:
           name: coverage-report
           path: coverage/
+        continue-on-error: true # In case no coverage artifact was uploaded
 
       - name: Upload coverage to Qlty
         uses: qltysh/qlty-action/coverage@v1
