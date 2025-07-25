@@ -23,7 +23,7 @@ end
 
 desc "Sync upstream fastpbkdf2 source to ext/ directory"
 task :sync do
-  upstream_dir = 'vendor/fastpbkdf2-upstream'
+  upstream_dir = 'vendor/fastpbkdf2'
   ext_dir = 'ext/fastpbkdf2'
 
   unless Dir.exist?(upstream_dir) && File.exist?("#{upstream_dir}/fastpbkdf2.c")
@@ -39,9 +39,6 @@ task :sync do
   puts "📋 Copying latest C source files..."
   FileUtils.cp("#{upstream_dir}/fastpbkdf2.c", ext_dir)
   FileUtils.cp("#{upstream_dir}/fastpbkdf2.h", ext_dir)
-
-  # Apply macOS compatibility patch
-  patch_macos_compatibility
 
   puts "✅ Upstream source synced!"
 end
@@ -104,24 +101,4 @@ task :upstream_status do
       puts "  #{file}: ❌ MISSING"
     end
   end
-end
-
-# Apply macOS compatibility patch
-# Update sync task to also update the macOS compatibility patch
-def patch_macos_compatibility
-  fastpbkdf2_c = 'ext/fastpbkdf2/fastpbkdf2.c'
-  content = File.read(fastpbkdf2_c)
-
-  # Fix endian.h include for macOS
-  content.gsub!(
-    '#if defined(__GNUC__)
-#include <endian.h>
-#endif',
-    '#if defined(__GNUC__) && !defined(__APPLE__)
-#include <endian.h>
-#endif'
-  )
-
-  File.write(fastpbkdf2_c, content)
-  puts "🔧 Applied macOS compatibility patch"
 end
