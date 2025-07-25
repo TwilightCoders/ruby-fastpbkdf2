@@ -53,7 +53,17 @@ task :compile do
     sh 'make clean'
     sh 'make'
   end
-  puts "✅ Extension compiled!"
+
+  # Copy compiled extension to lib directory
+  FileUtils.mkdir_p('lib/fastpbkdf2')
+  compiled_ext = Dir.glob('ext/fastpbkdf2/fastpbkdf2.{bundle,so}').first
+  if compiled_ext
+    FileUtils.cp(compiled_ext, 'lib/fastpbkdf2/')
+    puts "✅ Extension compiled and copied to lib/!"
+  else
+    puts "❌ Could not find compiled extension!"
+    exit 1
+  end
 end
 
 desc "Clean compiled files"
