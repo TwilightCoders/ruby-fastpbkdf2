@@ -1,0 +1,3 @@
+[submodule "vendor/fastpbkdf2"]
+	path = vendor/fastpbkdf2
+	url = https://github.com/ctz/fastpbkdf2.git

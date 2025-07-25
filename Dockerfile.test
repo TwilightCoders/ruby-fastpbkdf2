@@ -1,0 +1,22 @@
+# Multi-stage Dockerfile for testing ruby-fastpbkdf2 on different platforms
+ARG RUBY_VERSION=3.3
+FROM ruby:${RUBY_VERSION}
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libssl-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy gem files
+COPY . .
+
+# Build and install the gem
+RUN gem build fastpbkdf2.gemspec && \
+    gem install ruby-fastpbkdf2-*.gem
+
+# Run tests
+CMD ["bundle", "exec", "rspec"]
