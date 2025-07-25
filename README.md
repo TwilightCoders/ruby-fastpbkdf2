@@ -3,6 +3,7 @@
 [![Maintainability](https://qlty.sh/badges/a5da0a90-9df5-4b9f-8e91-51079bfbc455/maintainability.svg)](https://qlty.sh/gh/TwilightCoders/projects/ruby-fastpbkdf2)
 [![Test Coverage](https://qlty.sh/badges/a5da0a90-9df5-4b9f-8e91-51079bfbc455/test_coverage.svg)](https://qlty.sh/gh/TwilightCoders/projects/ruby-fastpbkdf2/metrics/code?sort=coverageRating)
 ![GitHub License](https://img.shields.io/github/license/twilightcoders/ruby-fastpbkdf2)
+
 # ruby-fastpbkdf2
 
 A Ruby gem providing high-performance PBKDF2 key derivation through Ruby bindings for the [fastpbkdf2](https://github.com/ctz/fastpbkdf2) C library. Delivers **1.5x faster** performance than Ruby's built-in OpenSSL PBKDF2 implementation.
@@ -40,7 +41,6 @@ key = FastPBKDF2.pbkdf2_hmac('sha256', 'password', 'salt', 100000, 32)
 Real-world benchmarks on macOS (x86_64) show consistent performance improvements across all scenarios:
 
 ### Low Security (1,000 iterations)
-
 | Algorithm | FastPBKDF2 | OpenSSL | Speedup   | Use Case                 |
 | --------- | ---------- | ------- | --------- | ------------------------ |
 | SHA1      | 0.12ms     | 0.21ms  | **1.75x** | Basic web authentication |
@@ -170,7 +170,6 @@ The gem compiles the fastpbkdf2 C library during installation, so no external de
 ## Cross-Platform Compatibility
 
 This gem is designed to compile and run across major platforms:
-
 ### ✅ Supported Platforms
 
 - **macOS**: Intel (x86_64) and Apple Silicon (arm64)
@@ -178,7 +177,6 @@ This gem is designed to compile and run across major platforms:
 - **Windows**: x64, x86 (with DevKit or Visual Studio)
 
 - **Unix variants**: FreeBSD, OpenBSD, NetBSD (with compatible toolchain)
-
 ### Platform-Specific Features
 
 - **OpenMP Support**: Automatically enabled on Linux for parallel processing (disabled on macOS due to clang limitations)
@@ -186,14 +184,12 @@ This gem is designed to compile and run across major platforms:
 - **Compiler Detection**: Automatically adapts compilation flags for GCC, Clang, and MSVC
 
 ### Build Requirements by Platform
-
 #### macOS
 ```bash
 
 # Xcode Command Line Tools (includes clang and OpenSSL)
 xcode-select --install
 ```
-
 #### Linux (Ubuntu/Debian)
 
 ```bash
@@ -208,7 +204,6 @@ sudo yum install gcc openssl-devel ruby-devel make
 sudo dnf install gcc openssl-devel ruby-devel make
 
 ```
-
 #### Windows
 
 ```bash

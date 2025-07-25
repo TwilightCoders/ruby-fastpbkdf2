@@ -1,17 +1,28 @@
 require 'mkmf'
-require 'fileutils'
 
-# Copy fastpbkdf2 C source files from vendor directory if they exist
-# This handles both development (with git submodule) and gem installation (with bundled files)
-vendor_dir = File.expand_path('../../vendor/fastpbkdf2', __dir__)
-if Dir.exist?(vendor_dir)
-  FileUtils.cp(File.join(vendor_dir, 'fastpbkdf2.c'), '.')
-  FileUtils.cp(File.join(vendor_dir, 'fastpbkdf2.h'), '.')
+# Configure OpenSSL paths for different platforms
+if RUBY_PLATFORM =~ /darwin/
+  # macOS: Check common Homebrew paths for OpenSSL
+  openssl_paths = [
+    '/opt/homebrew/opt/openssl@3',  # Apple Silicon Homebrew
+    '/usr/local/opt/openssl@3',     # Intel Homebrew
+    '/opt/homebrew/opt/openssl',    # Apple Silicon Homebrew (fallback)
+    '/usr/local/opt/openssl'        # Intel Homebrew (fallback)
+  ]
 
-  # Apply macOS compatibility fix to fastpbkdf2.c
-  content = File.read('fastpbkdf2.c')
-  content.gsub!('#if defined(__GNUC__)', '#if defined(__GNUC__) && !defined(__APPLE__)')
-  File.write('fastpbkdf2.c', content)
+  openssl_found = false
+  openssl_paths.each do |path|
+    if Dir.exist?(path)
+      dir_config('openssl', "#{path}/include", "#{path}/lib")
+      openssl_found = true
+      break
+    end
+  end
+
+  unless openssl_found
+    puts "Warning: OpenSSL not found in standard Homebrew locations"
+    puts "Trying system paths..."
+  end
 end
 
 # Check for OpenSSL (required by fastpbkdf2)
@@ -39,6 +50,10 @@ if RUBY_PLATFORM !~ /darwin/ && (have_library('gomp') || have_library('omp'))
   $CFLAGS << ' -fopenmp -DWITH_OPENMP'
   $LDFLAGS << ' -fopenmp'
 end
+
+# Use wrapper approach - compile fastpbkdf2_wrapper.c instead of copying files
+# The wrapper handles platform compatibility without modifying vendor files
+$objs = ['fastpbkdf2_wrapper.o', 'fastpbkdf2_ruby.o']
 
 # Create the Makefile
 create_makefile('fastpbkdf2/fastpbkdf2')
