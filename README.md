@@ -25,6 +25,10 @@ key = FastPBKDF2.pbkdf2_hmac_sha256('password', 'salt', 100000, 32)
 
 # Generic method with algorithm selection
 key = FastPBKDF2.pbkdf2_hmac('sha256', 'password', 'salt', 100000, 32)
+
+# Hex output helpers (convenience)
+hex_key = FastPBKDF2.sha256_hex('password', 'salt', 100000) # => 64-char hex string
+generic_hex = FastPBKDF2.pbkdf2_hmac_hex(:sha1, 'password', 'salt', 2000, 16) # => 32-char hex
 ```
 
 ## Features
@@ -312,3 +316,31 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
 ---
 
 **Note**: This gem was developed to solve PBKDF2 performance bottlenecks in iOS backup decryption for the [imessage_utils](https://github.com/twilightcoders/imessage_utils) project.
+
+---
+
+## Upstream Integrity & Reproducibility
+
+The bundled upstream C implementation is tracked as a git submodule at `vendor/fastpbkdf2`.
+
+Current pinned commit:
+
+```
+3c568957de1d26a3811deba4a0ce1895731ce9a4 (v1.0.0-8-g3c56895)
+```
+
+### Verify Locally
+
+```bash
+git submodule status vendor/fastpbkdf2
+sha256sum vendor/fastpbkdf2/fastpbkdf2.c | cut -d' ' -f1
+```
+
+### Update Procedure
+1. `git submodule update --remote vendor/fastpbkdf2`
+2. Review upstream changes / diff
+3. Run `rake compile && rake spec`
+4. Update CHANGELOG with integrity note
+5. Commit with message: `chore: bump upstream fastpbkdf2 to <short_sha>`
+
+No local patches are applied; portability handled via wrapper/endian headers.
