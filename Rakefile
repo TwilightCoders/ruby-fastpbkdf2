@@ -90,15 +90,20 @@ end
 desc "Show upstream status"
 task :upstream_status do
   puts "📊 Upstream fastpbkdf2 status:"
-  sh "cd vendor/fastpbkdf2-upstream && git log --oneline -5"
+  if Dir.exist?('vendor/fastpbkdf2/.git')
+    sh "cd vendor/fastpbkdf2 && git log --oneline -5"
+  else
+    puts " (submodule not initialized)"
+  end
 
   puts "\n📋 Current vendored files:"
   %w[fastpbkdf2.c fastpbkdf2.h].each do |file|
-    if File.exist?("ext/fastpbkdf2/#{file}")
-      mtime = File.mtime("ext/fastpbkdf2/#{file}")
-      puts "  #{file}: #{mtime.strftime('%Y-%m-%d %H:%M:%S')}"
+    vendor_path = "vendor/fastpbkdf2/#{file}"
+    if File.exist?(vendor_path)
+      mtime = File.mtime(vendor_path)
+      puts "  #{file}: vendor copy (#{mtime.strftime('%Y-%m-%d %H:%M:%S')})"
     else
-      puts "  #{file}: ❌ MISSING"
+      puts "  #{file}: ❌ MISSING in vendor"
     end
   end
 end

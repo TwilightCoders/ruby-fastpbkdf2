@@ -168,7 +168,7 @@ RSpec.describe FastPBKDF2 do
     end
 
     it "raises error for zero iterations" do
-      expect { FastPBKDF2.pbkdf2_hmac_sha1("password", "salt", 0, 20) }.to raise_error(ArgumentError, /iterations must be greater than 0/)
+      expect { FastPBKDF2.pbkdf2_hmac_sha1("password", "salt", 0, 20) }.to raise_error(ArgumentError, /iterations must be between 1 and \d+/)
     end
 
     it "raises error for zero length" do

@@ -157,7 +157,7 @@ bundle install
 rake compile
 rake spec
 gem build fastpbkdf2.gemspec
-gem install ruby-fastpbkdf2-0.0.1.gem
+gem install ruby-fastpbkdf2-0.0.2.gem
 ```
 
 ### Requirements

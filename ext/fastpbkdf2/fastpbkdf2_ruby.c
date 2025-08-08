@@ -19,28 +19,37 @@ rb_fastpbkdf2_hmac_sha1(VALUE self __attribute__((unused)), VALUE password, VALU
 {
     Check_Type(password, T_STRING);
     Check_Type(salt, T_STRING);
-    Check_Type(iterations, T_FIXNUM);
-    Check_Type(length, T_FIXNUM);
-    
+
+    VALUE iter_val = rb_to_int(iterations);
+    VALUE len_val  = rb_to_int(length);
+
+    unsigned long iter_ul = NUM2ULONG(iter_val);
+    unsigned long len_ul  = NUM2ULONG(len_val);
+
+    if (iter_ul == 0 || iter_ul > UINT32_MAX) {
+        rb_raise(rb_eArgError, "iterations must be between 1 and %u", UINT32_MAX);
+    }
+    if (len_ul == 0) {
+        rb_raise(rb_eArgError, "length must be greater than 0");
+    }
+
+    /* Basic sanity limit to avoid pathological allocations (256MB cap) */
+    if (len_ul > (256UL * 1024UL * 1024UL)) {
+        rb_raise(rb_eArgError, "length too large (max 256MB)");
+    }
+
     const uint8_t *pw = (const uint8_t *)RSTRING_PTR(password);
     size_t npw = RSTRING_LEN(password);
     const uint8_t *salt_ptr = (const uint8_t *)RSTRING_PTR(salt);
     size_t nsalt = RSTRING_LEN(salt);
-    uint32_t iter = NUM2UINT(iterations);
-    size_t nout = NUM2UINT(length);
-    
-    if (iter == 0) {
-        rb_raise(rb_eArgError, "iterations must be greater than 0");
-    }
-    if (nout == 0) {
-        rb_raise(rb_eArgError, "length must be greater than 0");
-    }
-    
+    uint32_t iter = (uint32_t)iter_ul;
+    size_t nout = (size_t)len_ul;
+
     VALUE result = rb_str_new(NULL, nout);
     uint8_t *out = (uint8_t *)RSTRING_PTR(result);
-    
+
     fastpbkdf2_hmac_sha1(pw, npw, salt_ptr, nsalt, iter, out, nout);
-    
+
     return result;
 }
 
@@ -60,28 +69,35 @@ rb_fastpbkdf2_hmac_sha256(VALUE self __attribute__((unused)), VALUE password, VA
 {
     Check_Type(password, T_STRING);
     Check_Type(salt, T_STRING);
-    Check_Type(iterations, T_FIXNUM);
-    Check_Type(length, T_FIXNUM);
-    
+
+    VALUE iter_val = rb_to_int(iterations);
+    VALUE len_val  = rb_to_int(length);
+
+    unsigned long iter_ul = NUM2ULONG(iter_val);
+    unsigned long len_ul  = NUM2ULONG(len_val);
+
+    if (iter_ul == 0 || iter_ul > UINT32_MAX) {
+        rb_raise(rb_eArgError, "iterations must be between 1 and %u", UINT32_MAX);
+    }
+    if (len_ul == 0) {
+        rb_raise(rb_eArgError, "length must be greater than 0");
+    }
+    if (len_ul > (256UL * 1024UL * 1024UL)) {
+        rb_raise(rb_eArgError, "length too large (max 256MB)");
+    }
+
     const uint8_t *pw = (const uint8_t *)RSTRING_PTR(password);
     size_t npw = RSTRING_LEN(password);
     const uint8_t *salt_ptr = (const uint8_t *)RSTRING_PTR(salt);
     size_t nsalt = RSTRING_LEN(salt);
-    uint32_t iter = NUM2UINT(iterations);
-    size_t nout = NUM2UINT(length);
-    
-    if (iter == 0) {
-        rb_raise(rb_eArgError, "iterations must be greater than 0");
-    }
-    if (nout == 0) {
-        rb_raise(rb_eArgError, "length must be greater than 0");
-    }
-    
+    uint32_t iter = (uint32_t)iter_ul;
+    size_t nout = (size_t)len_ul;
+
     VALUE result = rb_str_new(NULL, nout);
     uint8_t *out = (uint8_t *)RSTRING_PTR(result);
-    
+
     fastpbkdf2_hmac_sha256(pw, npw, salt_ptr, nsalt, iter, out, nout);
-    
+
     return result;
 }
 
@@ -101,28 +117,35 @@ rb_fastpbkdf2_hmac_sha512(VALUE self __attribute__((unused)), VALUE password, VA
 {
     Check_Type(password, T_STRING);
     Check_Type(salt, T_STRING);
-    Check_Type(iterations, T_FIXNUM);
-    Check_Type(length, T_FIXNUM);
-    
+
+    VALUE iter_val = rb_to_int(iterations);
+    VALUE len_val  = rb_to_int(length);
+
+    unsigned long iter_ul = NUM2ULONG(iter_val);
+    unsigned long len_ul  = NUM2ULONG(len_val);
+
+    if (iter_ul == 0 || iter_ul > UINT32_MAX) {
+        rb_raise(rb_eArgError, "iterations must be between 1 and %u", UINT32_MAX);
+    }
+    if (len_ul == 0) {
+        rb_raise(rb_eArgError, "length must be greater than 0");
+    }
+    if (len_ul > (256UL * 1024UL * 1024UL)) {
+        rb_raise(rb_eArgError, "length too large (max 256MB)");
+    }
+
     const uint8_t *pw = (const uint8_t *)RSTRING_PTR(password);
     size_t npw = RSTRING_LEN(password);
     const uint8_t *salt_ptr = (const uint8_t *)RSTRING_PTR(salt);
     size_t nsalt = RSTRING_LEN(salt);
-    uint32_t iter = NUM2UINT(iterations);
-    size_t nout = NUM2UINT(length);
-    
-    if (iter == 0) {
-        rb_raise(rb_eArgError, "iterations must be greater than 0");
-    }
-    if (nout == 0) {
-        rb_raise(rb_eArgError, "length must be greater than 0");
-    }
-    
+    uint32_t iter = (uint32_t)iter_ul;
+    size_t nout = (size_t)len_ul;
+
     VALUE result = rb_str_new(NULL, nout);
     uint8_t *out = (uint8_t *)RSTRING_PTR(result);
-    
+
     fastpbkdf2_hmac_sha512(pw, npw, salt_ptr, nsalt, iter, out, nout);
-    
+
     return result;
 }
 
