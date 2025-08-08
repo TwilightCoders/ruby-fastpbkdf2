@@ -42,6 +42,13 @@ class << FastPBKDF2
   def sha512_hex(password, salt, iterations, dklen = 64)
     sha512(password, salt, iterations, dklen).unpack1('H*')
   end
+
+  # Constant-time comparison for derived keys (returns true/false)
+  # Prefer this over == to avoid timing leaks when comparing secrets.
+  # FastPBKDF2.secure_compare(a, b) is implemented in C.
+
+  # Soft warning threshold for iterations (default set in C). Set to nil/0 to disable.
+  # FastPBKDF2.iteration_warning_threshold = 2_000_000
 end
 
 # Create alias for backward compatibility (lowercase version)

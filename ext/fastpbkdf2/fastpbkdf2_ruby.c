@@ -2,6 +2,7 @@
 #include "fastpbkdf2_wrapper.h"
 
 static VALUE mFastpbkdf2;
+static unsigned long fastpbkdf2_iteration_warn_threshold = 1000000UL; /* default soft warning at 1M */
 
 /*
  * call-seq:
@@ -29,6 +30,9 @@ rb_fastpbkdf2_hmac_sha1(VALUE self __attribute__((unused)), VALUE password, VALU
     if (iter_ul == 0 || iter_ul > UINT32_MAX) {
         rb_raise(rb_eArgError, "iterations must be between 1 and %u", UINT32_MAX);
     }
+        if (fastpbkdf2_iteration_warn_threshold && iter_ul > fastpbkdf2_iteration_warn_threshold) {
+            rb_warn("FastPBKDF2: iteration count %lu exceeds soft warning threshold %lu", iter_ul, fastpbkdf2_iteration_warn_threshold);
+        }
     if (len_ul == 0) {
         rb_raise(rb_eArgError, "length must be greater than 0");
     }
@@ -79,6 +83,9 @@ rb_fastpbkdf2_hmac_sha256(VALUE self __attribute__((unused)), VALUE password, VA
     if (iter_ul == 0 || iter_ul > UINT32_MAX) {
         rb_raise(rb_eArgError, "iterations must be between 1 and %u", UINT32_MAX);
     }
+        if (fastpbkdf2_iteration_warn_threshold && iter_ul > fastpbkdf2_iteration_warn_threshold) {
+            rb_warn("FastPBKDF2: iteration count %lu exceeds soft warning threshold %lu", iter_ul, fastpbkdf2_iteration_warn_threshold);
+        }
     if (len_ul == 0) {
         rb_raise(rb_eArgError, "length must be greater than 0");
     }
@@ -99,6 +106,34 @@ rb_fastpbkdf2_hmac_sha256(VALUE self __attribute__((unused)), VALUE password, VA
     fastpbkdf2_hmac_sha256(pw, npw, salt_ptr, nsalt, iter, out, nout);
 
     return result;
+}
+
+/* Secure constant-time compare */
+static VALUE rb_fastpbkdf2_secure_compare(VALUE self __attribute__((unused)), VALUE a, VALUE b) {
+    Check_Type(a, T_STRING);
+    Check_Type(b, T_STRING);
+    long la = RSTRING_LEN(a);
+    long lb = RSTRING_LEN(b);
+    if (la != lb) return Qfalse;
+    const unsigned char *pa = (const unsigned char *)RSTRING_PTR(a);
+    const unsigned char *pb = (const unsigned char *)RSTRING_PTR(b);
+    unsigned int diff = 0;
+    for (long i = 0; i < la; i++) {
+        diff |= (unsigned int)(pa[i] ^ pb[i]);
+    }
+    return diff == 0 ? Qtrue : Qfalse;
+}
+
+/* Iteration warning threshold setters/getters */
+static VALUE rb_fastpbkdf2_set_iter_warn(VALUE self __attribute__((unused)), VALUE threshold) {
+    threshold = rb_to_int(threshold);
+    unsigned long val = NUM2ULONG(threshold);
+    fastpbkdf2_iteration_warn_threshold = val;
+    return ULONG2NUM(val);
+}
+
+static VALUE rb_fastpbkdf2_get_iter_warn(VALUE self __attribute__((unused))) {
+    return ULONG2NUM(fastpbkdf2_iteration_warn_threshold);
 }
 
 /*
@@ -127,6 +162,9 @@ rb_fastpbkdf2_hmac_sha512(VALUE self __attribute__((unused)), VALUE password, VA
     if (iter_ul == 0 || iter_ul > UINT32_MAX) {
         rb_raise(rb_eArgError, "iterations must be between 1 and %u", UINT32_MAX);
     }
+        if (fastpbkdf2_iteration_warn_threshold && iter_ul > fastpbkdf2_iteration_warn_threshold) {
+            rb_warn("FastPBKDF2: iteration count %lu exceeds soft warning threshold %lu", iter_ul, fastpbkdf2_iteration_warn_threshold);
+        }
     if (len_ul == 0) {
         rb_raise(rb_eArgError, "length must be greater than 0");
     }
@@ -162,4 +200,9 @@ Init_fastpbkdf2(void)
     rb_define_alias(rb_singleton_class(mFastpbkdf2), "sha1", "pbkdf2_hmac_sha1");
     rb_define_alias(rb_singleton_class(mFastpbkdf2), "sha256", "pbkdf2_hmac_sha256");
     rb_define_alias(rb_singleton_class(mFastpbkdf2), "sha512", "pbkdf2_hmac_sha512");
+
+    /* Soft iteration warning threshold accessor */
+    rb_define_singleton_method(mFastpbkdf2, "iteration_warning_threshold=", RUBY_METHOD_FUNC(rb_fastpbkdf2_set_iter_warn), 1);
+    rb_define_singleton_method(mFastpbkdf2, "iteration_warning_threshold", RUBY_METHOD_FUNC(rb_fastpbkdf2_get_iter_warn), 0);
+    rb_define_singleton_method(mFastpbkdf2, "secure_compare", RUBY_METHOD_FUNC(rb_fastpbkdf2_secure_compare), 2);
 }

@@ -7,15 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Planned
+- Precompiled native gem build pipeline (fat gems) for faster installs
+- Additional algorithm ext points (potential future hash additions)
+
+## [0.0.3] - 2025-08-08
+
 ### Added
-- (Planned) Hex-encoded helpers: `sha1_hex`, `sha256_hex`, `sha512_hex`, and generic `pbkdf2_hmac_hex`
-- (Planned) Optional warning hook for very large iteration counts
+- Hex helper methods: `sha1_hex`, `sha256_hex`, `sha512_hex`, `pbkdf2_hmac_hex`
+- Constant-time `secure_compare` for derived key comparison
+- Soft iteration warning threshold (configurable)
+- Executable benchmark script: `benchmark_fastpbkdf2`
 
-### Changed
-- (Planned) README: document upstream submodule verification steps
+### Documentation
+- README updates: hex usage, iteration threshold, secure_compare, upstream integrity procedure
 
-### Security
-- (Planned) Guidance for choosing iteration counts and salt sizes
+### Internal
+- Version bump to 0.0.3 (no breaking changes)
 
 ## [0.0.2] - 2025-08-08
 
@@ -73,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development setup and contribution guidelines
 - Performance benchmarks and use cases
 
-[Unreleased]: https://github.com/twilightcoders/ruby-fastpbkdf2/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/twilightcoders/ruby-fastpbkdf2/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/twilightcoders/ruby-fastpbkdf2/releases/tag/v0.0.3
 [0.0.2]: https://github.com/twilightcoders/ruby-fastpbkdf2/releases/tag/v0.0.2
 [0.0.1]: https://github.com/twilightcoders/ruby-fastpbkdf2/releases/tag/v0.0.1

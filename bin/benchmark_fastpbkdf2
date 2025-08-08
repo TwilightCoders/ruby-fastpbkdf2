@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+# Simple benchmark utility for ruby-fastpbkdf2
+require 'benchmark'
+require 'fastpbkdf2'
+require 'openssl'
+
+def fmt(ms)
+  format('%.2f ms', ms * 1000)
+end
+
+password = ENV['PBKDF2_PASSWORD'] || 'benchmark_password'
+salt     = ENV['PBKDF2_SALT'] || 'benchmark_salt'
+iterations = (ENV['PBKDF2_ITER'] || 100_000).to_i
+length = (ENV['PBKDF2_LEN'] || 32).to_i
+runs = (ENV['PBKDF2_RUNS'] || 3).to_i
+
+puts "FastPBKDF2 Benchmark"
+puts "Password length: #{password.bytesize}, Salt length: #{salt.bytesize}"
+puts "Iterations: #{iterations}, Length: #{length}, Runs: #{runs}"; puts
+
+# Warm-up
+FastPBKDF2.sha256(password, salt, 1000, length)
+OpenSSL::PKCS5.pbkdf2_hmac(password, salt, 1000, length, OpenSSL::Digest::SHA256.new)
+
+fast_time = Benchmark.realtime do
+  runs.times { FastPBKDF2.sha256(password, salt, iterations, length) }
+end / runs
+
+ossl_time = Benchmark.realtime do
+  runs.times { OpenSSL::PKCS5.pbkdf2_hmac(password, salt, iterations, length, OpenSSL::Digest::SHA256.new) }
+end / runs
+
+speedup = ossl_time / fast_time
+
+puts "FastPBKDF2 SHA256 avg: #{fmt(fast_time)}"
+puts "OpenSSL     SHA256 avg: #{fmt(ossl_time)}"
+puts "Speedup: #{format('%.2fx', speedup)}"
+
+puts "\nHex sample: #{FastPBKDF2.sha256_hex(password, salt, iterations)[0, 32]}..."
+
+if ENV['PBKDF2_COMPARE']
+  a = FastPBKDF2.sha256(password, salt, iterations, length)
+  b = a.dup
+  puts "secure_compare identical: #{FastPBKDF2.secure_compare(a,b)}"
+  b.setbyte(0, b.getbyte(0) ^ 0xFF)
+  puts "secure_compare different: #{FastPBKDF2.secure_compare(a,b)}"
+end

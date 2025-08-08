@@ -107,6 +107,12 @@ key = FastPBKDF2.pbkdf2_hmac_sha512(password, salt, iterations, length)
 # Algorithm can be string or symbol, case insensitive
 key = FastPBKDF2.pbkdf2_hmac('sha256', password, salt, iterations)      # Uses default length
 key = FastPBKDF2.pbkdf2_hmac(:SHA256, password, salt, iterations, 16)   # Custom length
+
+# Hex generic variant
+hex_key = FastPBKDF2.pbkdf2_hmac_hex(:sha256, password, salt, iterations)
+
+# Secure constant-time compare of two derived keys
+FastPBKDF2.secure_compare(key, key2) # => true/false
 ```
 
 ### Parameters
@@ -117,6 +123,16 @@ key = FastPBKDF2.pbkdf2_hmac(:SHA256, password, salt, iterations, 16)   # Custom
 - **length**: Integer output key length in bytes (must be > 0)
 
 All methods return a binary string (ASCII-8BIT encoding) containing the derived key.
+
+### Iteration Warning Threshold
+
+You can configure a soft warning threshold (default 1,000,000) beyond which a warning is emitted:
+
+```ruby
+FastPBKDF2.iteration_warning_threshold = 2_000_000 # Disable with 0 or nil
+```
+
+This does not block execution; it is purely informational to help catch accidental very large values.
 
 ## Use Cases
 
