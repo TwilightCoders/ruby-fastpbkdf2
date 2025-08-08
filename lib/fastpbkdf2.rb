@@ -25,6 +25,23 @@ class << FastPBKDF2
       raise ArgumentError, "Unsupported algorithm: #{algorithm}"
     end
   end
+
+  # Hex variants for convenience (return lowercase hex string)
+  def pbkdf2_hmac_hex(algorithm, password, salt, iterations, dklen = nil)
+    pbkdf2_hmac(algorithm, password, salt, iterations, dklen).unpack1('H*')
+  end
+
+  def sha1_hex(password, salt, iterations, dklen = 20)
+    sha1(password, salt, iterations, dklen).unpack1('H*')
+  end
+
+  def sha256_hex(password, salt, iterations, dklen = 32)
+    sha256(password, salt, iterations, dklen).unpack1('H*')
+  end
+
+  def sha512_hex(password, salt, iterations, dklen = 64)
+    sha512(password, salt, iterations, dklen).unpack1('H*')
+  end
 end
 
 # Create alias for backward compatibility (lowercase version)

@@ -1,4 +1,26 @@
 RSpec.describe FastPBKDF2 do
+  describe "hex helper methods" do
+    let(:password) { "hexpass" }
+    let(:salt) { "hexsalt" }
+    let(:iter) { 1000 }
+
+    it "returns lowercase hex for sha256_hex" do
+      raw = FastPBKDF2.sha256(password, salt, iter, 32)
+      hex = FastPBKDF2.sha256_hex(password, salt, iter)
+      expect(hex).to eq(raw.unpack1('H*'))
+      expect(hex).to match(/\A[0-9a-f]{64}\z/)
+    end
+
+    it "supports custom length for generic pbkdf2_hmac_hex" do
+      hex = FastPBKDF2.pbkdf2_hmac_hex(:sha1, password, salt, iter, 16)
+      expect(hex.length).to eq(32) # 16 bytes => 32 hex chars
+    end
+
+    it "handles sha512_hex default length" do
+      hex = FastPBKDF2.sha512_hex(password, salt, iter)
+      expect(hex.length).to eq(128)
+    end
+  end
   describe "module methods" do
     it "responds to all three PBKDF2 methods" do
       expect(FastPBKDF2).to respond_to(:pbkdf2_hmac_sha1)
