@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- (Planned) Hex-encoded helpers: `sha1_hex`, `sha256_hex`, `sha512_hex`, and generic `pbkdf2_hmac_hex`
+- (Planned) Optional warning hook for very large iteration counts
+
+### Changed
+- (Planned) README: document upstream submodule verification steps
+
+### Security
+- (Planned) Guidance for choosing iteration counts and salt sizes
+
+## [0.0.2] - 2025-08-08
+
+### Added
+- Argument validation hardening in C extension (iteration and dklen bounds)
+- Derived key length safety cap (256MB) to avoid pathological allocation
+- RubyGems MFA metadata (`rubygems_mfa_required = true`)
+
+### Fixed
+- Rake `upstream_status` path now matches actual `vendor/fastpbkdf2`
+- README installation example updated to current version
+
+### Internal
+- Unified integer coercion via `rb_to_int` and `NUM2ULONG`
+- Consistent error messaging across algorithms
+
+### Documentation
+- Clarified validation semantics and internal comments
+
+### Integrity
+- Noted upstream submodule commit: `3c568957 (v1.0.0-8-g3c56895)`
+
+### Notes
+- No public API changes; backward compatible
+
 ## [0.0.1] - 2025-07-25
 
 ### Added
@@ -39,5 +73,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development setup and contribution guidelines
 - Performance benchmarks and use cases
 
-[Unreleased]: https://github.com/twilightcoders/ruby-fastpbkdf2/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/twilightcoders/ruby-fastpbkdf2/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/twilightcoders/ruby-fastpbkdf2/releases/tag/v0.0.2
 [0.0.1]: https://github.com/twilightcoders/ruby-fastpbkdf2/releases/tag/v0.0.1
